@@ -1,0 +1,20 @@
+{
+    "name": "mockREST",
+    "version": "0.0.1",
+    "author": "barbaracassani",
+    "description": "a mock rest service for development purposes",
+    "main": "app",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/barbaracassani/mockREST.git"
+    },
+    "keywords": [
+        "RESTful",
+        "mock",
+        "service"
+    ],
+    "devDependencies": {
+        "jasmine-node"    :  "latest"
+    },
+    "license": "MIT"
+}

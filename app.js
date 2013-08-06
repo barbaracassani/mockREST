@@ -1,14 +1,12 @@
 var http = require('http'),
     url = require('url'),
     fs = require('fs'),
-    fileNames = [],
     routes = {},
     data,
     tokens = {},
     server,
     port = 8888,
-    dataFolder = "./data",
-    configFolder = "./config";
+    dataFolder = "./data";
 
 function grabDataFiles() {
     fs.readdir(dataFolder, function(err, files) {
@@ -165,7 +163,7 @@ function applySideEffects(data, parentObj, method, lastKey, lastKeyIsNumber, req
 function createResponse(req, res) {
     res.writeHead(200, {"Content-Type": "application/json"});
     if (req.method == 'POST' || req.method == 'PUT') {
-        console.log("[200] " + req.method + " to " + req.url);
+
         var fullBody = '';
 
         req.on('data', function(chunk) {
@@ -174,19 +172,7 @@ function createResponse(req, res) {
         });
 
         req.on('end', function() {
-
-            // request ended -> do something with the data
-            //res.writeHead(200, "OK", {'Content-Type': 'text/html'});
-
-            // parse the received body data
-            //var decodedBody = querystring.parse(fullBody);
-
-            // output the decoded data to the HTTP response
-            //res.write('<html><head><title>Post data</title></head><body><pre>');
-            //res.write(fullBody);
             res.write(getData(url.parse(req.url).pathname.trim(), req.method, JSON.parse(fullBody)));
-            //res.write('</pre></body></html>');
-
             res.end();
         });
 

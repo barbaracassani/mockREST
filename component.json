@@ -2,7 +2,7 @@
     "name": "mockREST",
     "version": "0.0.1",
     "main": "./app.js",
-    "dependencies": {
+    "devDependencies": {
         "jasmine-node" : "latest"
     }
 }
