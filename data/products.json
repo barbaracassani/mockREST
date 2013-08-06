@@ -1,0 +1,74 @@
+{
+    "products": [
+        {
+            "id": 1,
+            "obj": "carrot",
+            "packages" : {
+                "single" : {
+                    "id" : 9,
+                    "price" : 0.9
+                },
+                "kilo" : {
+                    "id" : 10,
+                    "price" : 0.5
+                }
+            }
+        },
+        {
+            "id": 88,
+            "obj": "pears",
+            "packages" : {
+                "single" : {
+                    "id" : 11,
+                    "price" : 1.4
+                },
+                "kilo" : {
+                    "id" : 12,
+                    "price" : 1
+                }
+            }
+        },
+        {
+            "id": 2,
+            "obj": "milk",
+            "packages" : {
+                "liter" : {
+                    "id" : 13,
+                    "price" : 1.3
+                },
+                "decaliter" : {
+                    "id" : 14,
+                    "price" : 1.1
+                }
+            }
+        },
+        {
+            "id": 3,
+            "obj": "bread",
+            "packages" : {
+                "single" : {
+                    "id" : 15,
+                    "price" : 2.2
+                },
+                "kilo" : {
+                    "id" : 16,
+                    "price" : 2
+                }
+            }
+        },
+        {
+            "id": 4,
+            "obj": "fish",
+            "packages" : {
+                "single" : {
+                    "id" : 18,
+                    "price" : 20
+                },
+                "kilo" : {
+                    "id" : 19,
+                    "price" : 19.5
+                }
+            }
+        }
+    ]
+}

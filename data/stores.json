@@ -1,0 +1,14 @@
+{
+    "stores" : [
+        {
+            "id" : 34,
+            "address" : "34, Rue Vaugirard, Paris",
+            "products" : ["pears", "lemons"]
+        },
+        {
+            "id" : 35,
+            "address" : "43, Rue Saint-Martin, Lyon",
+            "products" : ["pears", "lemons", "apples"]
+        }
+    ]
+}
