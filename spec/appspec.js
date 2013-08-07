@@ -166,6 +166,7 @@ describe('post requests', function() {
             response.on('data', function (rp) {
                 var r = JSON.parse(rp);
                 expect(r.address).toBe("Streitstrasse, Zurich");
+                expect(r.id).not.toBeUndefined();
                 describe('state', function(){
                     it('it\'s stateful', function(done){
                         http.get(url + "stores", function(response){

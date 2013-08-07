@@ -1,5 +1,5 @@
 {
-    "name": "mockREST",
+    "name": "mock-restful",
     "version": "0.0.1",
     "author": "barbaracassani",
     "description": "a mock rest service for development purposes",
