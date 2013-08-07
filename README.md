@@ -15,4 +15,4 @@ Usage: put some json file(s) into the data folder. Change the port in app.js if 
 Install
 -------
 
-    node install mock-restful
+    npm install mock-restful
