@@ -1,3 +1,17 @@
+/**
+ * mockREST - answers your RESTful calls, and keeps the state if you add or delete (until you restart the app)
+ * Useful for development purposes
+ * @author Barbara Cassani - barbara [at] kitsch-en [dot] net
+ * Instructions:
+ * - put one or more valid json files into the data folder
+ * - [optional] change below the port to what you want (if you want)
+ * - [optional] change the idIdentifier below if the id in your files is not called 'id'
+ * - start the server with node app.js
+ * - test the app by calling [whateverYourServerIsCalled]:[port]/stores/35 (admitting that you haven't changed the id
+ * and that the example files are still in the data folder)
+ * - enjoy.
+ * @type {exports|*}
+ */
 var http = require('http'),
     url = require('url'),
     fs = require('fs'),
