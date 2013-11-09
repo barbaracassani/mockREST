@@ -2,6 +2,7 @@
  * mockREST - answers your RESTful calls, and keeps the state if you add or delete (until you restart the app)
  * Useful for development purposes
  * @author Barbara Cassani - barbara [at] kitsch-en [dot] net
+ * @version 0.0.3
  * Instructions:
  * - put one or more valid json files into the data folder
  * - [optional] change below the port to what you want (if you want)
