@@ -6,6 +6,7 @@ var http = require('http'),
     tokens = {},
     server,
     port = 8888,
+    idIdentifier = 'id',
     dataFolder = "./data";
 
 function grabDataFiles() {
@@ -63,8 +64,8 @@ function addEntry(data, lastKeyIsNumber, req) {
     if (lastKeyIsNumber) {
         return data;
     }
-    if (!req.id) {
-        req.id = uuid();
+    if (!req[idIdentifier]) {
+        req[idIdentifier] = uuid();
     }
     data.push(req);
     return req;
@@ -73,7 +74,7 @@ function modifyEntry(data, parObj, lastKey, lastKeyIsNumber, req) {
     var index;
     if (lastKeyIsNumber) {
         parObj.filter(function(val, key) {
-            if (val.id === parseInt(lastKey, 10)) {
+            if (val[idIdentifier] === parseInt(lastKey, 10)) {
                 index = key;
                 return true;
             }
@@ -81,8 +82,8 @@ function modifyEntry(data, parObj, lastKey, lastKeyIsNumber, req) {
         if (index) {
             parObj[index] = req;
         } else {
-            if (!req.id) {
-                req.id = uuid();
+            if (!req[idIdentifier]) {
+                req[idIdentifier] = uuid();
             }
             parObj.push(req);
         }
@@ -99,7 +100,7 @@ function deleteEntry(data, parObj, lastKey, lastKeyIsNumber) {
     if (lastKeyIsNumber) {
         if (parObj.length) {
             parObj.filter(function(val, key) {
-                if (val.id === parseInt(lastKey, 10)) {
+                if (val[idIdentifier] === parseInt(lastKey, 10)) {
                     index = key;
                     return true;
                 }
@@ -124,13 +125,21 @@ function getData(path, method, req) {
     var pathChunks = path.split('/'),
         lastKey, lastKeyIsNumber,
         parentObj,
+        response,
         returnObj = routes;
+
     pathChunks.shift();
+
+    if (pathChunks.length < 1) {
+        return 'Please specify a valid RESTful request. Examples\r\n' +
+            'http://127.0.0.1/stores';
+    }
+
     for (var i = 0, iLen = pathChunks.length ; i<iLen ; i++) {
         parentObj = returnObj;
         if (pathChunks[i].match(/(\d+)/)) {
             returnObj = returnObj.filter(function(val, key) {
-                return val.id === parseInt(pathChunks[i], 10);
+                return val[idIdentifier] === parseInt(pathChunks[i], 10);
             })[0];
             lastKeyIsNumber = true;
         } else {
@@ -139,7 +148,10 @@ function getData(path, method, req) {
         }
         lastKey = pathChunks[i];
     }
-    return JSON.stringify(applySideEffects(returnObj, parentObj, method, lastKey, lastKeyIsNumber, req));
+
+    response = applySideEffects(returnObj, parentObj, method, lastKey, lastKeyIsNumber, req);
+
+    return response !== undefined ? JSON.stringify(response) : 'No data for this request';
 }
 
 function applySideEffects(data, parentObj, method, lastKey, lastKeyIsNumber, req) {
@@ -161,7 +173,9 @@ function applySideEffects(data, parentObj, method, lastKey, lastKeyIsNumber, req
  * @param res
  */
 function createResponse(req, res) {
+
     res.writeHead(200, {"Content-Type": "application/json"});
+
     if (req.method == 'POST' || req.method == 'PUT') {
 
         var fullBody = '';
@@ -177,7 +191,8 @@ function createResponse(req, res) {
         });
 
     } else {
-        res.write(getData(url.parse(req.url).pathname.trim(), req.method, req.body));
+        var payload = getData(url.parse(req.url).pathname.trim(), req.method, req.body);
+        res.write(payload);
         res.end();
 
     }
