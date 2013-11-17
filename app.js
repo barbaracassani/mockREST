@@ -22,34 +22,38 @@ var http = require('http'),
     server,
     port = 8888,
     idIdentifier = 'id',
-    dataFolder = "./data";
+    dataFolder = "./data",
+    noDataMessage = 'No data for this request',
+    mockREST = function(){};
 
-function grabDataFiles() {
+
+mockREST.prototype.grabDataFiles = function() {
+    var that = this;
     fs.readdir(dataFolder, function(err, files) {
         var l = files.length - 1, file, token;
         while (l >= 0) {
             file = files[l];
             if (file.match(/.*.json$/)) {
-                token = uuid();
+                token = that.uuid();
                 tokens[token] = true;
-                grabFileContent(dataFolder, file, token);
+                that.grabFileContent(dataFolder, file, token);
             }
             l--;
         }
     });
-}
+};
 
 /**
  * Check if all the requests for files have returned. Will start the server on the last one
  */
-function onFilesRead() {
+mockREST.prototype.onFilesRead = function() {
     for (var i in tokens) {
         if (tokens.hasOwnProperty(i) && tokens[i]) {
             return;
         }
     }
-    startServer();
-}
+    this.startServer();
+};
 
 /**
  * Read a configuration file
@@ -57,9 +61,10 @@ function onFilesRead() {
  * @param filename
  * @param returnToken
  */
-function grabFileContent(folder, filename, returnToken) {
+mockREST.prototype.grabFileContent = function(folder, filename, returnToken) {
 
-    var path = folder + '/' + filename;
+    var path = folder + '/' + filename,
+        that = this;
 
     fs.readFile(path, function(err, data){
         var obj = JSON.parse(data), l, method, p, tmp;
@@ -72,20 +77,22 @@ function grabFileContent(folder, filename, returnToken) {
 
         }
         tokens[returnToken] = false;
-        onFilesRead();
+        that.onFilesRead();
     });
-}
-function addEntry(data, lastKeyIsNumber, req) {
+};
+
+mockREST.prototype.addEntry = function(data, lastKeyIsNumber, req) {
     if (lastKeyIsNumber) {
         return data;
     }
     if (!req[idIdentifier]) {
-        req[idIdentifier] = uuid();
+        req[idIdentifier] = this.uuid();
     }
     data.push(req);
     return req;
-}
-function modifyEntry(data, parObj, lastKey, lastKeyIsNumber, req) {
+};
+
+mockREST.prototype.modifyEntry = function(data, parObj, lastKey, lastKeyIsNumber, req) {
     var index;
     if (lastKeyIsNumber) {
         parObj.filter(function(val, key) {
@@ -98,7 +105,7 @@ function modifyEntry(data, parObj, lastKey, lastKeyIsNumber, req) {
             parObj[index] = req;
         } else {
             if (!req[idIdentifier]) {
-                req[idIdentifier] = uuid();
+                req[idIdentifier] = this.uuid();
             }
             parObj.push(req);
         }
@@ -109,8 +116,9 @@ function modifyEntry(data, parObj, lastKey, lastKeyIsNumber, req) {
         parObj[lastKey] = req;
     }
     return req;
-}
-function deleteEntry(data, parObj, lastKey, lastKeyIsNumber) {
+};
+
+mockREST.prototype.deleteEntry = function(data, parObj, lastKey, lastKeyIsNumber) {
     var index, deletedEl;
     if (lastKeyIsNumber) {
         if (parObj.length) {
@@ -128,7 +136,8 @@ function deleteEntry(data, parObj, lastKey, lastKeyIsNumber) {
         deletedEl = [];
     }
     return deletedEl;
-}
+};
+
 /**
  * Gets the desired route from an URL
  * @param path
@@ -136,7 +145,7 @@ function deleteEntry(data, parObj, lastKey, lastKeyIsNumber) {
  * @param req
  * @return {*}
  */
-function getData(path, method, req) {
+mockREST.prototype.getData = function(path, method, req) {
     var pathChunks = path.split('/'),
         lastKey, lastKeyIsNumber,
         parentObj,
@@ -152,7 +161,7 @@ function getData(path, method, req) {
 
     for (var i = 0, iLen = pathChunks.length ; i<iLen ; i++) {
         parentObj = returnObj;
-        if (pathChunks[i].match(/(\d+)/)) {
+        if (pathChunks[i].match(/^[0-9]+$/)) {
             returnObj = returnObj.filter(function(val, key) {
                 return val[idIdentifier] === parseInt(pathChunks[i], 10);
             })[0];
@@ -164,32 +173,49 @@ function getData(path, method, req) {
         lastKey = pathChunks[i];
     }
 
-    response = applySideEffects(returnObj, parentObj, method, lastKey, lastKeyIsNumber, req);
+    response = this.applySideEffects(returnObj, parentObj, method, lastKey, lastKeyIsNumber, req);
 
-    return response !== undefined ? JSON.stringify(response) : 'No data for this request';
-}
+    return response !== undefined ? JSON.stringify(response) : noDataMessage;
+};
 
-function applySideEffects(data, parentObj, method, lastKey, lastKeyIsNumber, req) {
+mockREST.prototype.applySideEffects = function(data, parentObj, method, lastKey, lastKeyIsNumber, req) {
     switch(method) {
         case 'GET' :
             return data;
         case 'DELETE' :
-            return deleteEntry(data, parentObj, lastKey, lastKeyIsNumber);
+            return this.deleteEntry(data, parentObj, lastKey, lastKeyIsNumber);
         case 'PUT':
-            return modifyEntry(data, parentObj, lastKey, lastKeyIsNumber, req);
+            return this.modifyEntry(data, parentObj, lastKey, lastKeyIsNumber, req);
         case 'POST':
-            return addEntry(data, lastKeyIsNumber, req);
+            return this.addEntry(data, lastKeyIsNumber, req);
     }
-}
+};
 
 /**
  * Answers the server calls
  * @param req
  * @param res
  */
-function createResponse(req, res) {
+mockREST.prototype.createResponse = function(req, res) {
 
     res.writeHead(200, {"Content-Type": "application/json"});
+
+
+    var payload, status;
+
+    if (req.method == 'POST' || req.method == 'PUT') {
+        payload = this.getData(url.parse(req.url).pathname.trim(), req.method, JSON.parse(fullBody));
+    } else {
+        payload = this.getData(url.parse(req.url).pathname.trim(), req.method, req.body);
+    }
+
+    if (payload == noDataMessage) {
+        status = 404;
+    } else {
+        status = 200;
+    }
+
+    res.writeHead(status, {"Content-Type": "application/json"});
 
     if (req.method == 'POST' || req.method == 'PUT') {
 
@@ -201,32 +227,39 @@ function createResponse(req, res) {
         });
 
         req.on('end', function() {
-            res.write(getData(url.parse(req.url).pathname.trim(), req.method, JSON.parse(fullBody)));
+            res.write(payload);
             res.end();
         });
 
     } else {
-        var payload = getData(url.parse(req.url).pathname.trim(), req.method, req.body);
         res.write(payload);
         res.end();
 
     }
 
-}
+};
 
 /**
  * Generates an unique identifier
  * @return number
  */
-function uuid() {
+mockREST.prototype.uuid =function() {
   return (parseInt((Math.random() * 1000), 10) + parseInt(new Date().valueOf(), 10));
-}
+};
 
 /**
  * Starts the server
  */
-function startServer() {
-    server = http.createServer(createResponse).listen(port);
-}
+mockREST.prototype.startServer = function() {
+    server = http.createServer(this.createResponse.bind(this)).listen(port);
+};
 
-grabDataFiles();
+mockREST.prototype.start = function() {
+    this.grabDataFiles();
+};
+
+mockREST.prototype.stop = function() {
+    server.close();
+};
+
+exports.mockREST = new mockREST().start();

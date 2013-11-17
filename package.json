@@ -14,7 +14,10 @@
         "service"
     ],
     "devDependencies": {
-        "jasmine-node"    :  "latest"
+        "chai": "*",
+        "mocha": "*",
+        "supertest" : "*"
+
     },
     "license": "MIT"
 }
