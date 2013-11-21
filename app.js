@@ -198,28 +198,10 @@ mockREST.prototype.applySideEffects = function(data, parentObj, method, lastKey,
  */
 mockREST.prototype.createResponse = function(req, res) {
 
-    res.writeHead(200, {"Content-Type": "application/json"});
+    var payload, status, fullBody = '', _self = this;
 
-
-    var payload, status;
 
     if (req.method == 'POST' || req.method == 'PUT') {
-        payload = this.getData(url.parse(req.url).pathname.trim(), req.method, JSON.parse(fullBody));
-    } else {
-        payload = this.getData(url.parse(req.url).pathname.trim(), req.method, req.body);
-    }
-
-    if (payload == noDataMessage) {
-        status = 404;
-    } else {
-        status = 200;
-    }
-
-    res.writeHead(status, {"Content-Type": "application/json"});
-
-    if (req.method == 'POST' || req.method == 'PUT') {
-
-        var fullBody = '';
 
         req.on('data', function(chunk) {
             // append the current chunk of data to the fullBody variable
@@ -227,11 +209,30 @@ mockREST.prototype.createResponse = function(req, res) {
         });
 
         req.on('end', function() {
+            payload = _self.getData(url.parse(req.url).pathname.trim(), req.method, JSON.parse(fullBody));
+
+            if (payload == noDataMessage) {
+                status = 404;
+            } else {
+                status = 200;
+            }
+
+            res.writeHead(status, {"Content-Type": "application/json"});
+
             res.write(payload);
             res.end();
         });
 
     } else {
+        payload = this.getData(url.parse(req.url).pathname.trim(), req.method, req.body);
+
+        if (payload == noDataMessage) {
+            status = 404;
+        } else {
+            status = 200;
+        }
+
+        res.writeHead(status, {"Content-Type": "application/json"});
         res.write(payload);
         res.end();
 
