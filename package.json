@@ -1,6 +1,6 @@
 {
     "name": "mock-restful",
-    "version": "0.0.3",
+    "version": "0.0.5",
     "author": "barbaracassani",
     "description": "a mock rest service for development purposes",
     "main": "app",

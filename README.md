@@ -24,7 +24,7 @@ And the various calls:
 I've used the conventions currently outlined in http://en.wikipedia.org/wiki/Representational_state_transfer
 
 
-Current version: 0.0.3
+Current version: 0.0.5
 
 Usage: put some json file(s) into the data folder. Change the port in app.js if needed. That's it - the app file will create a server and respond to restful calls, as long as they follow the object nesting on the json.
 
@@ -32,3 +32,9 @@ Install
 -------
 
     npm install mock-restful
+
+
+Start
+-------
+
+    node app.js start
