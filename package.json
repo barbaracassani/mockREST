@@ -1,6 +1,6 @@
 {
     "name": "mock-restful",
-    "version": "0.0.1",
+    "version": "0.0.6",
     "author": "barbaracassani",
     "description": "a mock rest service for development purposes",
     "main": "app",
@@ -14,7 +14,10 @@
         "service"
     ],
     "devDependencies": {
-        "jasmine-node"    :  "latest"
+        "chai": "*",
+        "mocha": "*",
+        "supertest" : "*"
+
     },
     "license": "MIT"
 }
