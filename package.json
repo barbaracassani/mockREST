@@ -11,7 +11,9 @@
     "keywords": [
         "RESTful",
         "mock",
-        "service"
+        "service",
+        "rest",
+        "http"
     ],
     "devDependencies": {
         "chai": "*",
