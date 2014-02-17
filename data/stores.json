@@ -8,7 +8,7 @@
         {
             "id" : 35,
             "address" : "43, Rue Saint-Martin, Lyon",
-            "products" : ["pears", "lemons", "apples"]
+            "products" : ["bananas", "lemons", "apples"]
         }
     ]
 }
