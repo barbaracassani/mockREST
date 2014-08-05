@@ -24,9 +24,9 @@ And the various calls:
 I've used the conventions currently outlined in http://en.wikipedia.org/wiki/Representational_state_transfer
 
 
-Current version: 0.1.0
+Current version: 0.1.3 - Added command line parameters
 
-Usage: put some json file(s) into the data folder. Change the port in app.js if needed. That's it - the app file will create a server and respond to restful calls, as long as they follow the object nesting on the json.
+Usage: put some json file(s) into the data folder. Start the app adding optionally the port number, path to data folder and the name of the id field. That's it - the app file will create a server and respond to restful calls, as long as they follow the object nesting on the json.
 
 Install
 -------
@@ -37,4 +37,4 @@ Install
 Start
 -------
 
-    node app.js
+    node app.js [port] [path-to-data-folder] [id-string]

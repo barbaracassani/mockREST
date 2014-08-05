@@ -44,7 +44,7 @@ describe('Base connection', function() {
                     .expect(200, '{"id":34,"address":"34, Rue Vaugirard, Paris","products":["pears","lemons"]}')
                     .end(function() {
                         api.get('/stores')
-                            .expect(200, '[{"id":35,"address":"43, Rue Saint-Martin, Lyon","products":["pears","lemons","apples"]}]', done);
+                            .expect(200, '[{"id":35,"address":"43, Rue Saint-Martin, Lyon","products":["bananas","lemons","apples"]}]', done);
 
                     })
             })

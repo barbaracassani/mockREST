@@ -13,16 +13,17 @@
  * - enjoy.
  * @type {exports|*}
  */
-var http = require('http'),
+var args = process.argv.slice(2),
+    http = require('http'),
     url = require('url'),
     fs = require('fs'),
     routes = {},
     data,
     tokens = {},
     server,
-    port = 8888,
-    idIdentifier = 'id',
-    dataFolder = "./data",
+    port = args[0] ||  8888,
+    idIdentifier = args[2] || 'id',
+    dataFolder = args[1] || "./data",
     noDataMessage = 'No data for this request',
     mockREST = function(){};
 
