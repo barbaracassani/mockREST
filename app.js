@@ -58,6 +58,7 @@ mockREST.prototype.grabDataFiles = function() {
         for (var i in data) {
             routes[i] = data[i];
         }
+        this.startServer();
     }
 };
 
