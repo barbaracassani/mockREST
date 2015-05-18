@@ -25,7 +25,14 @@ var args = process.argv.slice(2),
     idIdentifier = args[2] || 'id',
     dataFolder = args[1] || "./data",
     noDataMessage = 'No data for this request',
-    mockREST = function(){};
+    mockREST = function(conf){
+        if (conf.port) {
+            port = conf.port;
+        }
+        if (conf.dataFolder) {
+            dataFolder = conf.dataFolder;
+        }
+    };
 
 
 mockREST.prototype.grabDataFiles = function() {
@@ -265,3 +272,4 @@ mockREST.prototype.stop = function() {
 };
 
 exports.mockREST = new mockREST().start();
+exports.mockRESTModule = mockREST;
