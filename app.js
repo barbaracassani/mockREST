@@ -26,29 +26,39 @@ var args = process.argv.slice(2),
     dataFolder = args[1] || "./data",
     noDataMessage = 'No data for this request',
     mockREST = function(conf){
-        if (conf.port) {
-            port = conf.port;
-        }
-        if (conf.dataFolder) {
-            dataFolder = conf.dataFolder;
+        if (conf) {
+            if (conf.port) {
+                port = conf.port;
+            }
+            if (conf.dataFolder) {
+                dataFolder = conf.dataFolder;
+            }
+            if (conf.data) {
+                data = conf.data;
+            }
         }
     };
 
 
 mockREST.prototype.grabDataFiles = function() {
-    var that = this;
-    fs.readdir(dataFolder, function(err, files) {
-        var l = files.length - 1, file, token;
-        while (l >= 0) {
-            file = files[l];
-            if (file.match(/.*.json$/)) {
-                token = that.uuid();
-                tokens[token] = true;
-                that.grabFileContent(dataFolder, file, token);
+    if (!data) {
+        fs.readdir(dataFolder, function(err, files) {
+            var l = files.length - 1, file, token;
+            while (l >= 0) {
+                file = files[l];
+                if (file.match(/.*.json$/)) {
+                    token = this.uuid();
+                    tokens[token] = true;
+                    this.grabFileContent(dataFolder, file, token);
+                }
+                l--;
             }
-            l--;
+        }.bind(this));
+    } else {
+        for (var i in data) {
+            routes[i] = data[i];
         }
-    });
+    }
 };
 
 /**
