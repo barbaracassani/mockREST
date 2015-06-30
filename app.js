@@ -2,15 +2,7 @@
  * mockREST - answers your RESTful calls, and keeps the state if you add or delete (until you restart the app)
  * Useful for development purposes
  * @author Barbara Cassani - barbara [at] kitsch-en [dot] net
- * @version 0.0.6
- * Instructions:
- * - put one or more valid json files into the data folder
- * - [optional] change below the port to what you want (if you want)
- * - [optional] change the idIdentifier below if the id in your files is not called 'id'
- * - start the server with    node app.js start
- * - test the app by calling [whateverYourServerIsCalled]:[port]/stores/35 (admitting that you haven't changed the id
- * and that the example files are still in the data folder)
- * - enjoy.
+ * @version 0.1.7
  * @type {exports|*}
  */
 var args = process.argv.slice(2),
@@ -25,7 +17,7 @@ var args = process.argv.slice(2),
     idIdentifier = args[2] || 'id',
     dataFolder = args[1] || "./data",
     noDataMessage = 'No data for this request',
-    mockREST = function(conf){
+    MockREST = function(conf){
         if (conf) {
             if (conf.port) {
                 port = conf.port;
@@ -40,7 +32,7 @@ var args = process.argv.slice(2),
     };
 
 
-mockREST.prototype.grabDataFiles = function() {
+MockREST.prototype.grabDataFiles = function() {
     if (!data) {
         fs.readdir(dataFolder, function(err, files) {
             var l = files.length - 1, file, token;
@@ -65,7 +57,7 @@ mockREST.prototype.grabDataFiles = function() {
 /**
  * Check if all the requests for files have returned. Will start the server on the last one
  */
-mockREST.prototype.onFilesRead = function() {
+MockREST.prototype.onFilesRead = function() {
     for (var i in tokens) {
         if (tokens.hasOwnProperty(i) && tokens[i]) {
             return;
@@ -80,7 +72,7 @@ mockREST.prototype.onFilesRead = function() {
  * @param filename
  * @param returnToken
  */
-mockREST.prototype.grabFileContent = function(folder, filename, returnToken) {
+MockREST.prototype.grabFileContent = function(folder, filename, returnToken) {
 
     var path = folder + '/' + filename,
         that = this;
@@ -100,7 +92,7 @@ mockREST.prototype.grabFileContent = function(folder, filename, returnToken) {
     });
 };
 
-mockREST.prototype.addEntry = function(data, lastKeyIsNumber, req) {
+MockREST.prototype.addEntry = function(data, lastKeyIsNumber, req) {
     if (lastKeyIsNumber) {
         return data;
     }
@@ -111,7 +103,7 @@ mockREST.prototype.addEntry = function(data, lastKeyIsNumber, req) {
     return req;
 };
 
-mockREST.prototype.modifyEntry = function(data, parObj, lastKey, lastKeyIsNumber, req) {
+MockREST.prototype.modifyEntry = function(data, parObj, lastKey, lastKeyIsNumber, req) {
     var index;
     if (lastKeyIsNumber) {
         parObj.filter(function(val, key) {
@@ -137,7 +129,7 @@ mockREST.prototype.modifyEntry = function(data, parObj, lastKey, lastKeyIsNumber
     return req;
 };
 
-mockREST.prototype.deleteEntry = function(data, parObj, lastKey, lastKeyIsNumber) {
+MockREST.prototype.deleteEntry = function(data, parObj, lastKey, lastKeyIsNumber) {
     var index, deletedEl;
     if (lastKeyIsNumber) {
         if (parObj.length) {
@@ -164,7 +156,7 @@ mockREST.prototype.deleteEntry = function(data, parObj, lastKey, lastKeyIsNumber
  * @param req
  * @return {*}
  */
-mockREST.prototype.getData = function(path, method, req) {
+MockREST.prototype.getData = function(path, method, req) {
     var pathChunks = path.split('/'),
         lastKey, lastKeyIsNumber,
         parentObj,
@@ -197,7 +189,7 @@ mockREST.prototype.getData = function(path, method, req) {
     return response !== undefined ? JSON.stringify(response) : noDataMessage;
 };
 
-mockREST.prototype.applySideEffects = function(data, parentObj, method, lastKey, lastKeyIsNumber, req) {
+MockREST.prototype.applySideEffects = function(data, parentObj, method, lastKey, lastKeyIsNumber, req) {
     switch(method) {
         case 'GET' :
             return data;
@@ -215,7 +207,7 @@ mockREST.prototype.applySideEffects = function(data, parentObj, method, lastKey,
  * @param req
  * @param res
  */
-mockREST.prototype.createResponse = function(req, res) {
+MockREST.prototype.createResponse = function(req, res) {
 
     var payload, status, fullBody = '', _self = this;
 
@@ -263,24 +255,27 @@ mockREST.prototype.createResponse = function(req, res) {
  * Generates an unique identifier
  * @return number
  */
-mockREST.prototype.uuid =function() {
+MockREST.prototype.uuid =function() {
   return (parseInt((Math.random() * 1000), 10) + parseInt(new Date().valueOf(), 10));
 };
 
 /**
  * Starts the server
  */
-mockREST.prototype.startServer = function() {
+MockREST.prototype.startServer = function() {
     server = http.createServer(this.createResponse.bind(this)).listen(port);
 };
 
-mockREST.prototype.start = function() {
+MockREST.prototype.start = function() {
     this.grabDataFiles();
 };
 
-mockREST.prototype.stop = function() {
+MockREST.prototype.stop = function() {
     server.close();
 };
 
-exports.mockREST = new mockREST().start();
-exports.mockRESTModule = mockREST;
+if (!module.parent) {
+    module.exports = new MockREST().start();
+} else {
+    module.exports = MockREST;
+}

@@ -3,6 +3,6 @@ NODE_EXEC    = NODE_PATH=.:$(NODE_PATH)
 test:
 	mocha --timeout 5000 --reporter nyan $(TESTS)
 start:
-	node app.js start()
+	node app.js
 
 .PHONY: test start
